@@ -1,11 +1,25 @@
 // The Swift Programming Language
 // https://docs.swift.org/swift-book
 
-/// A macro that produces both a value and a string containing the
-/// source code that generated the value. For example,
+/// # propertyinit
+/// PropertyInit is a small macro which automagically generates an initializer for
+/// stored properties, so you don't have to write the boilerplate initializer yourself
+/// hand have them elegantly folded away behind this macro.
 ///
-///     #stringify(x + y)
+/// - Example Usage:
 ///
-/// produces a tuple `(x + y, "x + y")`.
-@freestanding(expression)
-public macro stringify<T>(_ value: T) -> (T, String) = #externalMacro(module: "PropertyInitMacros", type: "StringifyMacro")
+/// ``` swift
+/// import SwiftData
+/// import PropertyInit
+///
+/// @propertyInit
+/// final class MySwiftDataModel {
+///     var name: String
+///     var number: Int
+/// }
+///
+/// ```
+@available(swift 5.9)
+@available(macOS 14, iOS 17, tvOS 17, watchOS 10, *)
+@attached(member, names: named(init))
+public macro propertyInit() = #externalMacro(module: "PropertyInitMacros", type: "PropertyInitMacro")

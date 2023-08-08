@@ -1,8 +1,29 @@
+// Testfile for PropertyInit
+
 import PropertyInit
+import SwiftUI
+
+
 
 let a = 17
 let b = 25
 
-let (result, code) = #stringify(a + b)
+@propertyInit
+struct MyStruct {
 
-print("The value \(result) was produced by the code \"\(code)\"")
+    var a: Int
+    var b: String
+    let c: any View
+    var huhu: Int {
+        get {
+            1
+        }
+        set {
+            a  = newValue
+        }
+    }
+    var d: Color
+    
+}
+
+

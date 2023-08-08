@@ -2,32 +2,61 @@ import SwiftCompilerPlugin
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
+import Foundation
 
-/// Implementation of the `stringify` macro, which takes an expression
-/// of any type and produces a tuple containing the value of that expression
-/// and the source code that produced the value. For example
-///
-///     #stringify(x + y)
-///
-///  will expand to
-///
-///     (x + y, "x + y")
-public struct StringifyMacro: ExpressionMacro {
-    public static func expansion(
-        of node: some FreestandingMacroExpansionSyntax,
-        in context: some MacroExpansionContext
-    ) -> ExprSyntax {
-        guard let argument = node.argumentList.first?.expression else {
-            fatalError("compiler bug: the macro does not have any arguments")
-        }
+struct StoredProperty {
+    var name: String
+    var type: String
+}
 
-        return "(\(argument), \(literal: argument.description))"
+extension DeclSyntaxProtocol {
+    var storedProperty: StoredProperty? {
+        guard let property = self.as(VariableDeclSyntax.self) else { return nil }
+        guard let binding = property.bindings.first else { return nil }
+        guard let identifier = binding.pattern.as(IdentifierPatternSyntax.self)?.identifier.text else { return nil }
+        guard binding.accessorBlock == nil else { return nil }
+        guard let type = binding.typeAnnotation?.type else { return nil }
+        return StoredProperty(name: identifier, type: type.description)
     }
+}
+
+public struct PropertyInitMacro: MemberMacro {
+    
+    public static func expansion(of node: SwiftSyntax.AttributeSyntax, providingMembersOf declaration: some SwiftSyntax.DeclGroupSyntax, in context: some SwiftSyntaxMacros.MacroExpansionContext) throws -> [SwiftSyntax.DeclSyntax] {
+        let storedProperties = declaration.memberBlock.members.filter { item in
+            item.decl.storedProperty != nil
+        }.map { $0.decl.storedProperty! }
+        var initializerParamsSyntax: String = ""
+        for property in storedProperties {
+            initializerParamsSyntax += "\(property.name): \(property.type), "
+        }
+        initializerParamsSyntax = String(initializerParamsSyntax.dropLast(2))
+        
+        var initializerAssignSyntax: String = ""
+        for property in storedProperties {
+            initializerAssignSyntax +=
+             """
+            self.\(property.name) = \(property.name)\n
+            """
+        }
+        
+        
+    
+        let storedPropertyInitializerDeclSyntax: DeclSyntax =
+                """
+                public init  (\(raw: initializerParamsSyntax)) {
+                    \(raw: initializerAssignSyntax)
+                }
+                """
+        return [storedPropertyInitializerDeclSyntax]
+    }
+    
+    
 }
 
 @main
 struct PropertyInitPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        StringifyMacro.self,
+        PropertyInitMacro.self,
     ]
 }
