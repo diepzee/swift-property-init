@@ -2,7 +2,6 @@ import SwiftCompilerPlugin
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
-import Foundation
 
 struct StoredProperty {
     var name: String

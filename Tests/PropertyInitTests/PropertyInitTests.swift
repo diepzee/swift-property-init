@@ -7,7 +7,7 @@ import XCTest
 import PropertyInitMacros
 
 let testMacros: [String: Macro.Type] = [
-    "stringify": StringifyMacro.self,
+    "propertyInit": PropertyInitMacro.self
 ]
 #endif
 
@@ -16,27 +16,22 @@ final class PropertyInitTests: XCTestCase {
         #if canImport(PropertyInitMacros)
         assertMacroExpansion(
             """
-            #stringify(a + b)
+            @propertyInit
+            class testclass {
+                var a: Int
+            }
             """,
             expandedSource: """
-            (a + b, "a + b")
-            """,
-            macros: testMacros
-        )
-        #else
-        throw XCTSkip("macros are only supported when running tests for the host platform")
-        #endif
-    }
+            
+            class testclass {
+                var a: Int
 
-    func testMacroWithStringLiteral() throws {
-        #if canImport(PropertyInitMacros)
-        assertMacroExpansion(
-            #"""
-            #stringify("Hello, \(name)")
-            """#,
-            expandedSource: #"""
-            ("Hello, \(name)", #""Hello, \(name)""#)
-            """#,
+                public init  (a: Int) {
+                    self.a = a
+
+                }
+            }
+            """,
             macros: testMacros
         )
         #else

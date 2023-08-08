@@ -13,10 +13,6 @@ let package = Package(
             name: "PropertyInit",
             targets: ["PropertyInit"]
         ),
-        .executable(
-            name: "PropertyInitClient",
-            targets: ["PropertyInitClient"]
-        ),
     ],
     dependencies: [
         // Depend on the latest Swift 5.9 prerelease of SwiftSyntax

@@ -12,17 +12,6 @@ let b = 25
 struct MyStruct {
 
     var a: Int
-    var b: String
-    let c: any View
-    var huhu: Int {
-        get {
-            1
-        }
-        set {
-            a  = newValue
-        }
-    }
-    var d: Color
     
 }
 
