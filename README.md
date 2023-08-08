@@ -40,11 +40,11 @@ Features coming soon:
 
 ## Availability
 
-**Swift**   - 5.9
-**macOS**   - Sonoma
-**iOS**     - 17
-**tvOS**    - 17
-**watchOS** - 10
+**Swift**   - 5.9  
+**macOS**   - Sonoma  
+**iOS**     - 17  
+**tvOS**    - 17  
+**watchOS** - 10  
 
 
 ## License
